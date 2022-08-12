@@ -1,6 +1,7 @@
-package lzf
+package lzf_test
 
 import (
+	l "github.com/tlarsendataguy-yxdb/yxdb-go/lzf"
 	"reflect"
 	"testing"
 )
@@ -18,7 +19,7 @@ func TestOutputArrayIsTooSmall(t *testing.T) {
 
 	inData := []byte{0, 25}
 	outData := make([]byte, 0)
-	lzf := Lzf{inBuffer: inData, outBuffer: outData}
+	lzf := l.Lzf{InBuffer: inData, OutBuffer: outData}
 
 	lzf.Decompress(2)
 }
@@ -52,7 +53,7 @@ func TestOutputArrayTooSmallForLargeControlValues(t *testing.T) {
 
 	inData := []byte{8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 224, 1, 8}
 	outData := make([]byte, 17)
-	lzf := Lzf{inBuffer: inData, outBuffer: outData}
+	lzf := l.Lzf{InBuffer: inData, OutBuffer: outData}
 
 	lzf.Decompress(13)
 }
@@ -60,7 +61,7 @@ func TestOutputArrayTooSmallForLargeControlValues(t *testing.T) {
 func TestResetLzfAndStartAgain(t *testing.T) {
 	inData := []byte{4, 1, 2, 3, 4, 5}
 	outData := make([]byte, 5)
-	lzf := Lzf{inBuffer: inData, outBuffer: outData}
+	lzf := l.Lzf{InBuffer: inData, OutBuffer: outData}
 
 	lzf.Decompress(6)
 
@@ -82,7 +83,7 @@ func TestResetLzfAndStartAgain(t *testing.T) {
 func performTest(inData []byte, expected []byte, t *testing.T) {
 	outSize := len(expected)
 	outData := make([]byte, outSize)
-	lzf := Lzf{inBuffer: inData, outBuffer: outData}
+	lzf := l.Lzf{InBuffer: inData, OutBuffer: outData}
 
 	written := lzf.Decompress(len(inData))
 	if written != outSize {

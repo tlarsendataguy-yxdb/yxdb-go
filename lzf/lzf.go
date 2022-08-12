@@ -1,8 +1,8 @@
 package lzf
 
 type Lzf struct {
-	inBuffer  []byte
-	outBuffer []byte
+	InBuffer  []byte
+	OutBuffer []byte
 	inIndex   int
 	outIndex  int
 	inLen     int
@@ -17,7 +17,7 @@ func (l *Lzf) Decompress(length int) int {
 	}
 
 	for l.inIndex < l.inLen {
-		ctrl := l.inBuffer[l.inIndex]
+		ctrl := l.InBuffer[l.inIndex]
 		l.inIndex++
 
 		if ctrl < 32 {
@@ -36,10 +36,10 @@ func (l *Lzf) reset() {
 
 func (l *Lzf) copyByteSequence(ctrl byte) {
 	length := int(ctrl + 1)
-	if l.outIndex+length > len(l.outBuffer) {
+	if l.outIndex+length > len(l.OutBuffer) {
 		panic("output array is too small")
 	}
-	copy(l.outBuffer[l.outIndex:l.outIndex+length], l.inBuffer[l.inIndex:l.inIndex+length])
+	copy(l.OutBuffer[l.outIndex:l.outIndex+length], l.InBuffer[l.inIndex:l.inIndex+length])
 	l.inIndex += length
 	l.outIndex += length
 }
@@ -49,15 +49,15 @@ func (l *Lzf) expandRepeatedBytes(ctrl byte) {
 	reference := l.outIndex - (int(ctrl&0x1f) << 8) - 1
 
 	if length == 7 {
-		length += int(l.inBuffer[l.inIndex])
+		length += int(l.InBuffer[l.inIndex])
 		l.inIndex++
 	}
 
-	if l.outIndex+length+2 > len(l.outBuffer) {
+	if l.outIndex+length+2 > len(l.OutBuffer) {
 		panic("output array is too small")
 	}
 
-	reference -= int(l.inBuffer[l.inIndex])
+	reference -= int(l.InBuffer[l.inIndex])
 	l.inIndex++
 
 	length += 2
@@ -70,7 +70,7 @@ func (l *Lzf) expandRepeatedBytes(ctrl byte) {
 }
 
 func (l *Lzf) copyFromReferenceAndIncrement(reference int, size int) int {
-	copy(l.outBuffer[l.outIndex:l.outIndex+size], l.outBuffer[reference:reference+size])
+	copy(l.OutBuffer[l.outIndex:l.outIndex+size], l.OutBuffer[reference:reference+size])
 	l.outIndex += size
 	return reference + size
 }
