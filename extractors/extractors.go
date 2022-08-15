@@ -90,7 +90,7 @@ func NewFloatExtractor(start int) Float64Extractor {
 func NewDoubleExtractor(start int) Float64Extractor {
 	return func(buffer []byte) (float64, bool) {
 		if buffer[start+8] == 1 {
-			return 0.0, false
+			return 0.0, true
 		}
 		return math.Float64frombits(binary.LittleEndian.Uint64(buffer[start : start+8])), false
 	}
@@ -150,6 +150,9 @@ func NewV_WStringExtractor(start int) StringExtractor {
 		if bytes == nil {
 			return ``, true
 		}
+		if len(bytes) == 0 {
+			return ``, false
+		}
 		return string(utf16.Decode(bytesToUint16(bytes))), false
 	}
 }
@@ -162,6 +165,10 @@ func NewBlobExtractor(start int) BlobExtractor {
 
 func getString(buffer []byte, start int, fieldLength int, charSize int) string {
 	length := getStringLen(buffer, start, fieldLength, charSize)
+	if length == 0 {
+		return ``
+	}
+
 	if charSize == 1 {
 		end := start + length
 		return string(buffer[start:end])
@@ -173,7 +180,7 @@ func getString(buffer []byte, start int, fieldLength int, charSize int) string {
 func getStringLen(buffer []byte, start int, fieldLength int, charSize int) int {
 	fieldTo := start + (fieldLength * charSize)
 	strLen := 0
-	for i := 0; i < fieldTo; i++ {
+	for i := start; i < fieldTo; i += charSize {
 		if buffer[i] == 0 && buffer[i+(charSize-1)] == 0 {
 			break
 		}
@@ -240,7 +247,7 @@ func getSmallBlob(buffer []byte, blockStart int) []byte {
 }
 
 func getNormalBlob(buffer []byte, blockStart int) []byte {
-	blobLen := int(binary.LittleEndian.Uint32(buffer[blockStart:blockStart+4])) * 2
+	blobLen := int(binary.LittleEndian.Uint32(buffer[blockStart:blockStart+4])) / 2
 	blobStart := blockStart + 4
 	blob := make([]byte, blobLen)
 	copy(blob, buffer[blobStart:blobStart+blobLen])
