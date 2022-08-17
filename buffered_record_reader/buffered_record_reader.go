@@ -14,7 +14,7 @@ type BufferedRecordReader struct {
 	Err               error
 	recordBufferIndex int
 	totalRecords      int64
-	stream            io.Reader
+	stream            io.ReadCloser
 	fixedLen          int
 	hasVarFields      bool
 	lzfIn             []byte
@@ -26,7 +26,7 @@ type BufferedRecordReader struct {
 	currentRecord     int64
 }
 
-func NewBufferedRecordReader(stream io.Reader, fixedLen int, hasVarFields bool, totalRecords int64) *BufferedRecordReader {
+func NewBufferedRecordReader(stream io.ReadCloser, fixedLen int, hasVarFields bool, totalRecords int64) *BufferedRecordReader {
 	var recordBuffer []byte
 	if hasVarFields {
 		recordBuffer = make([]byte, fixedLen+4+1000)
@@ -72,6 +72,10 @@ func (r *BufferedRecordReader) NextRecord() bool {
 		return false
 	}
 	return true
+}
+
+func (r *BufferedRecordReader) Close() error {
+	return r.stream.Close()
 }
 
 func (r *BufferedRecordReader) readVariableRecord() error {

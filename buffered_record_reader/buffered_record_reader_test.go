@@ -25,6 +25,8 @@ func TestLotsOfRecords(t *testing.T) {
 	if recordsRead != 100000 {
 		t.Fatalf(`expected 100000 records but got %v`, recordsRead)
 	}
+
+	_ = reader.Close()
 }
 
 func TestVeryLongField(t *testing.T) {
@@ -44,6 +46,7 @@ func TestVeryLongField(t *testing.T) {
 	if recordsRead != 3 {
 		t.Fatalf(`expected 3 records but got %v`, recordsRead)
 	}
+	_ = reader.Close()
 }
 
 func getPath(fileName string) string {
