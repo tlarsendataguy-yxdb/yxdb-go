@@ -15,8 +15,8 @@ type BufferedRecordReader struct {
 	recordBufferIndex int
 	totalRecords      int64
 	stream            io.ReadCloser
-	fixedLen          int
-	hasVarFields      bool
+	FixedLen          int
+	HasVarFields      bool
 	lzfIn             []byte
 	lzfOut            []byte
 	lzf               l.Lzf
@@ -41,8 +41,8 @@ func NewBufferedRecordReader(stream io.ReadCloser, fixedLen int, hasVarFields bo
 		recordBufferIndex: 0,
 		totalRecords:      totalRecords,
 		stream:            stream,
-		fixedLen:          fixedLen,
-		hasVarFields:      hasVarFields,
+		FixedLen:          fixedLen,
+		HasVarFields:      hasVarFields,
 		lzfIn:             lzfIn,
 		lzfOut:            lzfOut,
 		lzf:               lzf,
@@ -62,10 +62,10 @@ func (r *BufferedRecordReader) NextRecord() bool {
 
 	r.recordBufferIndex = 0
 	var err error
-	if r.hasVarFields {
+	if r.HasVarFields {
 		err = r.readVariableRecord()
 	} else {
-		err = r.read(r.fixedLen)
+		err = r.read(r.FixedLen)
 	}
 	if err != nil {
 		r.Err = err
@@ -79,15 +79,15 @@ func (r *BufferedRecordReader) Close() error {
 }
 
 func (r *BufferedRecordReader) readVariableRecord() error {
-	err := r.read(r.fixedLen + 4)
+	err := r.read(r.FixedLen + 4)
 	if err != nil {
 		return err
 	}
 	varLength := int(binary.LittleEndian.Uint32(r.RecordBuffer[r.recordBufferIndex-4 : r.recordBufferIndex]))
-	if r.fixedLen+varLength+4 > cap(r.RecordBuffer) {
-		newLength := (r.fixedLen + 4 + varLength) * 2
+	if r.FixedLen+varLength+4 > cap(r.RecordBuffer) {
+		newLength := (r.FixedLen + 4 + varLength) * 2
 		newBuffer := make([]byte, newLength)
-		copyTo := r.fixedLen + 4
+		copyTo := r.FixedLen + 4
 		copySlice(r.RecordBuffer, 0, newBuffer, 0, copyTo)
 		r.RecordBuffer = newBuffer
 	}
