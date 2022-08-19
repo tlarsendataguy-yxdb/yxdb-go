@@ -1,4 +1,4 @@
-package yxdb_go_test
+package yxdb_test
 
 import (
 	"fmt"

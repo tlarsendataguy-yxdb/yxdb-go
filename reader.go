@@ -1,4 +1,5 @@
-package yxdb_go
+// Package yxdb reads and parses .yxdb data files.
+package yxdb
 
 import (
 	"encoding/binary"
@@ -20,29 +21,100 @@ type metaInfo struct {
 	RecordInfoFields []metafield.MetaInfoField `xml:"RecordInfo>Field"`
 }
 
-type YxdbReader interface {
+// A Reader is the interface that reads and parses .yxdb files.
+//
+// Instantiate a Reader using the ReadFile and ReadStream functions.
+type Reader interface {
 	io.Closer
+
+	// ListFields returns the list of fields contained in the .yxdb file and their data type.
 	ListFields() []yxrecord.YxdbField
+
+	// Next iterates through the records in a .yxdb file, returning true if there are more records and false if
+	// all records have been read.
 	Next() bool
+
+	// NumRecords returns the number of records in the .yxdb file.
 	NumRecords() int64
+
+	// MetaInfoStr returns the XML metadata, as a string, of the fields contained in the .yxdb file.
 	MetaInfoStr() string
+
+	// ReadByteWithIndex reads a byte field at the specified field index.
+	//
+	// If the field at the specified index is not a byte field, ReadByteWithIndex will panic.
 	ReadByteWithIndex(int) (byte, bool)
+
+	// ReadByteWithName reads a byte field with the specified name.
+	//
+	// If the name is not valid or the field with the specified name is not a byte field, ReadByteWithName will panic.
 	ReadByteWithName(string) (byte, bool)
+
+	// ReadBoolWithIndex reads a boolean field at the specified field index.
+	//
+	// If the field at the specified index is not a boolean field, ReadBoolWithIndex will panic.
 	ReadBoolWithIndex(int) (bool, bool)
+
+	// ReadBoolWithName reads a boolean field with the specified name.
+	//
+	// If the name is not valid or the field with the specified name is not a boolean field, ReadBoolWithName will panic.
 	ReadBoolWithName(string) (bool, bool)
+
+	// ReadInt64WithIndex reads an integer field at the specified field index.
+	//
+	// If the field at the specified index is not an integer field, ReadInt64WithIndex will panic.
 	ReadInt64WithIndex(int) (int64, bool)
+
+	// ReadInt64WithName reads an integer field with the specified name.
+	//
+	// If the name is not valid or the field with the specified name is not an integer field, ReadInt64WithName will panic.
 	ReadInt64WithName(string) (int64, bool)
+
+	// ReadFloat64WithIndex reads a numeric field at the specified field index.
+	//
+	// If the field at the specified index is not a numeric field, ReadFloat64WithIndex will panic.
 	ReadFloat64WithIndex(int) (float64, bool)
+
+	// ReadFloat64WithName reads a numeric field with the specified name.
+	//
+	// If the name is not valid or the field with the specified name is not a numeric field, ReadFloat64WithName will panic.
 	ReadFloat64WithName(string) (float64, bool)
+
+	// ReadStringWithIndex reads a string field at the specified field index.
+	//
+	// If the field at the specified index is not a string field, ReadStringWithIndex will panic.
 	ReadStringWithIndex(int) (string, bool)
+
+	// ReadStringWithName reads a string field with the specified name.
+	//
+	// If the name is not valid or the field with the specified name is not a string field, ReadStringWithName will panic.
 	ReadStringWithName(string) (string, bool)
+
+	// ReadTimeWithIndex reads a date/datetime field at the specified field index.
+	//
+	// If the field at the specified index is not a date/datetime field, ReadTimeWithIndex will panic.
 	ReadTimeWithIndex(int) (time.Time, bool)
+
+	// ReadTimeWithName reads a date/datetime field with the specified name.
+	//
+	// If the name is not valid or the field with the specified name is not a date/datetime field, ReadTimeWithName will panic.
 	ReadTimeWithName(string) (time.Time, bool)
+
+	// ReadBlobWithIndex reads a binary field at the specified field index.
+	//
+	// If the field at the specified index is not a binary field, ReadBlobWithIndex will panic.
 	ReadBlobWithIndex(int) []byte
+
+	// ReadBlobWithName reads a binary field with the specified name.
+	//
+	// If the name is not valid or the field with the specified name is not a binary field, ReadBlobWithName will panic.
 	ReadBlobWithName(string) []byte
 }
 
-func ReadFile(path string) (YxdbReader, error) {
+// ReadFile instantiates a Reader from the specified file path.
+//
+// If the file does not exist, cannot be opened, or is not a valid .yxdb file, ReadFile will return an error.
+func ReadFile(path string) (Reader, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -59,7 +131,10 @@ func ReadFile(path string) (YxdbReader, error) {
 	return reader, nil
 }
 
-func ReadStream(stream io.ReadCloser) (YxdbReader, error) {
+// ReadStream instantiates a Reader from the specified io.ReadCloser.
+//
+// If the stream encounters an error or is not a valid .yxdb files, ReadStream will return an error.
+func ReadStream(stream io.ReadCloser) (Reader, error) {
 	reader := &r{
 		stream: stream,
 	}

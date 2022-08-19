@@ -19,6 +19,7 @@ const (
 	String
 )
 
+// YxdbField contains the name and type of field in a .yxdb file.
 type YxdbField struct {
 	Name string
 	Type DataType
