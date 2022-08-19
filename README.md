@@ -1,6 +1,8 @@
 ## yxdb-go
 
-yxdb is a package for reading YXDB files into Go applications.
+yxdb is a package for reading YXDB files into Go applications. Install it using:
+
+`go get github.com/tlarsendataguy-yxdb/yxdb-go`
 
 The library does not have external dependencies.
 
