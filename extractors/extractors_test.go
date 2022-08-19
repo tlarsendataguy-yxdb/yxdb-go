@@ -1,7 +1,7 @@
 package extractors_test
 
 import (
-	"github.com/tlarsendataguy-yxdb/yxdb-go/extractors"
+	"github.com/tlarsendataguy-yxdb/yxdb/extractors"
 	"math"
 	"reflect"
 	"strings"

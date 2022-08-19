@@ -1,9 +1,9 @@
-package yxdb_record_test
+package yxrecord_test
 
 import (
 	"fmt"
-	"github.com/tlarsendataguy-yxdb/yxdb-go/meta_info_field"
-	r "github.com/tlarsendataguy-yxdb/yxdb-go/yxdb_record"
+	"github.com/tlarsendataguy-yxdb/yxdb/metafield"
+	r "github.com/tlarsendataguy-yxdb/yxdb/yxrecord"
 	"math"
 	"reflect"
 	"testing"
@@ -224,7 +224,7 @@ func checkBlobValue(t *testing.T, record *r.YxdbRecord, source []byte, expected 
 }
 
 func loadRecordWithValueColumn(dataType string, size int) *r.YxdbRecord {
-	fields := []meta_info_field.MetaInfoField{
+	fields := []metafield.MetaInfoField{
 		{
 			Name:  `value`,
 			Type:  dataType,

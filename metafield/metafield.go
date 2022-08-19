@@ -1,4 +1,4 @@
-package meta_info_field
+package metafield
 
 type MetaInfoField struct {
 	Name  string `xml:"name,attr"`

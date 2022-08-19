@@ -1,7 +1,7 @@
 package lzf_test
 
 import (
-	l "github.com/tlarsendataguy-yxdb/yxdb-go/lzf"
+	l "github.com/tlarsendataguy-yxdb/yxdb/lzf"
 	"reflect"
 	"testing"
 )

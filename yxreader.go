@@ -4,9 +4,9 @@ import (
 	"encoding/binary"
 	"encoding/xml"
 	"errors"
-	"github.com/tlarsendataguy-yxdb/yxdb-go/buffered_record_reader"
-	"github.com/tlarsendataguy-yxdb/yxdb-go/meta_info_field"
-	"github.com/tlarsendataguy-yxdb/yxdb-go/yxdb_record"
+	"github.com/tlarsendataguy-yxdb/yxdb/bufrecord"
+	"github.com/tlarsendataguy-yxdb/yxdb/metafield"
+	"github.com/tlarsendataguy-yxdb/yxdb/yxrecord"
 	"io"
 	"os"
 	"reflect"
@@ -16,13 +16,13 @@ import (
 )
 
 type metaInfo struct {
-	Fields           []meta_info_field.MetaInfoField `xml:"Field"`
-	RecordInfoFields []meta_info_field.MetaInfoField `xml:"RecordInfo>Field"`
+	Fields           []metafield.MetaInfoField `xml:"Field"`
+	RecordInfoFields []metafield.MetaInfoField `xml:"RecordInfo>Field"`
 }
 
 type YxdbReader interface {
 	io.Closer
-	ListFields() []yxdb_record.YxdbField
+	ListFields() []yxrecord.YxdbField
 	Next() bool
 	NumRecords() int64
 	MetaInfoStr() string
@@ -73,15 +73,15 @@ func ReadStream(stream io.ReadCloser) (YxdbReader, error) {
 
 type r struct {
 	stream       io.ReadCloser
-	fields       []meta_info_field.MetaInfoField
+	fields       []metafield.MetaInfoField
 	metaInfoSize int
 	numRecords   int64
-	record       *yxdb_record.YxdbRecord
-	recordReader *buffered_record_reader.BufferedRecordReader
+	record       *yxrecord.YxdbRecord
+	recordReader *bufrecord.BufferedRecordReader
 	metaInfoStr  string
 }
 
-func (r *r) ListFields() []yxdb_record.YxdbField {
+func (r *r) ListFields() []yxrecord.YxdbField {
 	return r.record.Fields
 }
 
@@ -158,7 +158,7 @@ func (r *r) ReadBlobWithName(name string) []byte {
 }
 
 func (r *r) loadHeaderAndMetaInfo() error {
-	r.fields = make([]meta_info_field.MetaInfoField, 0)
+	r.fields = make([]metafield.MetaInfoField, 0)
 	header, err := r.getHeader()
 	if err != nil {
 		return err
@@ -169,11 +169,11 @@ func (r *r) loadHeaderAndMetaInfo() error {
 	if err != nil {
 		return err
 	}
-	r.record, err = yxdb_record.FromFieldList(r.fields)
+	r.record, err = yxrecord.FromFieldList(r.fields)
 	if err != nil {
 		return err
 	}
-	r.recordReader = buffered_record_reader.NewBufferedRecordReader(
+	r.recordReader = bufrecord.NewBufferedRecordReader(
 		r.stream,
 		r.record.FixedSize,
 		r.record.HasVar,

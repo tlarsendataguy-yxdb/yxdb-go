@@ -1,3 +1,3 @@
-module github.com/tlarsendataguy-yxdb/yxdb-go
+module github.com/tlarsendataguy-yxdb/yxdb
 
 go 1.17

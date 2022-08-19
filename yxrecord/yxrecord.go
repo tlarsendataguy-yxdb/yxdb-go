@@ -1,9 +1,9 @@
-package yxdb_record
+package yxrecord
 
 import (
 	"errors"
-	e "github.com/tlarsendataguy-yxdb/yxdb-go/extractors"
-	m "github.com/tlarsendataguy-yxdb/yxdb-go/meta_info_field"
+	e "github.com/tlarsendataguy-yxdb/yxdb/extractors"
+	m "github.com/tlarsendataguy-yxdb/yxdb/metafield"
 	"time"
 )
 

@@ -1,9 +1,9 @@
-package buffered_record_reader
+package bufrecord
 
 import (
 	"encoding/binary"
 	"fmt"
-	l "github.com/tlarsendataguy-yxdb/yxdb-go/lzf"
+	l "github.com/tlarsendataguy-yxdb/yxdb/lzf"
 	"io"
 )
 

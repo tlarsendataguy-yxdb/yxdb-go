@@ -2,7 +2,7 @@ package yxdb_go_test
 
 import (
 	"fmt"
-	yxdbgo "github.com/tlarsendataguy-yxdb/yxdb-go"
+	yx "github.com/tlarsendataguy-yxdb/yxdb"
 	"os"
 	"strings"
 	"testing"
@@ -11,7 +11,7 @@ import (
 
 func TestGetReader(t *testing.T) {
 	path := getPath(`AllNormalFields.yxdb`)
-	yxdb, err := yxdbgo.ReadFile(path)
+	yxdb, err := yx.ReadFile(path)
 
 	if err != nil {
 		t.Fatalf(`expected no error but got: %v`, err.Error())
@@ -68,7 +68,7 @@ func TestGetReader(t *testing.T) {
 
 func TestLotsOfRecords(t *testing.T) {
 	path := getPath(`LotsOfRecords.yxdb`)
-	yxdb, err := yxdbgo.ReadFile(path)
+	yxdb, err := yx.ReadFile(path)
 
 	if err != nil {
 		t.Fatalf(`expected no error but got %v`, err.Error())
@@ -91,7 +91,7 @@ func TestLotsOfRecords(t *testing.T) {
 func TestLoadReaderFromStream(t *testing.T) {
 	path := getPath(`LotsOfRecords.yxdb`)
 	file, _ := os.Open(path)
-	yxdb, err := yxdbgo.ReadStream(file)
+	yxdb, err := yx.ReadStream(file)
 
 	if err != nil {
 		t.Fatalf(`expected no error but got %v`, err.Error())
@@ -113,7 +113,7 @@ func TestLoadReaderFromStream(t *testing.T) {
 
 func TestTutorialData(t *testing.T) {
 	path := getPath(`TutorialData.yxdb`)
-	yxdb, err := yxdbgo.ReadFile(path)
+	yxdb, err := yx.ReadFile(path)
 	if err != nil {
 		t.Fatalf(`expected no error but got %v`, err.Error())
 	}
@@ -130,7 +130,7 @@ func TestTutorialData(t *testing.T) {
 
 func TestNewYxdb(t *testing.T) {
 	path := getPath(`TestNewYxdb.yxdb`)
-	yxdb, err := yxdbgo.ReadFile(path)
+	yxdb, err := yx.ReadFile(path)
 
 	if err != nil {
 		t.Fatalf(`expected no error but got %v`, err.Error())
@@ -151,7 +151,7 @@ func TestNewYxdb(t *testing.T) {
 
 func TestVeryLongField(t *testing.T) {
 	path := getPath(`VeryLongField.yxdb`)
-	yxdb, err := yxdbgo.ReadFile(path)
+	yxdb, err := yx.ReadFile(path)
 	if err != nil {
 		t.Fatalf(`expected no error but got %v`, err.Error())
 	}

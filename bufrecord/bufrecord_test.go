@@ -1,9 +1,9 @@
-package buffered_record_reader_test
+package bufrecord_test
 
 import (
 	"encoding/binary"
 	"fmt"
-	r "github.com/tlarsendataguy-yxdb/yxdb-go/buffered_record_reader"
+	r "github.com/tlarsendataguy-yxdb/yxdb/bufrecord"
 	"os"
 	"testing"
 )
