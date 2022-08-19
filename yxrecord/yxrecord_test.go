@@ -2,8 +2,8 @@ package yxrecord_test
 
 import (
 	"fmt"
-	"github.com/tlarsendataguy-yxdb/yxdb/metafield"
-	r "github.com/tlarsendataguy-yxdb/yxdb/yxrecord"
+	"github.com/tlarsendataguy-yxdb/yxdb-go/metafield"
+	r "github.com/tlarsendataguy-yxdb/yxdb-go/yxrecord"
 	"math"
 	"reflect"
 	"testing"

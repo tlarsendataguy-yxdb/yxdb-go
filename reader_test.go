@@ -2,7 +2,7 @@ package yxdb_test
 
 import (
 	"fmt"
-	yx "github.com/tlarsendataguy-yxdb/yxdb"
+	yx "github.com/tlarsendataguy-yxdb/yxdb-go"
 	"os"
 	"strings"
 	"testing"
