@@ -125,7 +125,7 @@ func ReadFile(path string) (Reader, error) {
 	err = reader.loadHeaderAndMetaInfo()
 	if err != nil {
 		reader.close()
-		return nil, errors.New(`the file is not a valid yxdb format`)
+		return nil, err
 	}
 
 	return reader, nil
@@ -238,6 +238,12 @@ func (r *r) loadHeaderAndMetaInfo() error {
 	if err != nil {
 		return err
 	}
+
+	fileType := string(header[0:21])
+	if fileType != "Alteryx Database File" {
+		return invalidYxdbFile()
+	}
+
 	r.numRecords = int64(binary.LittleEndian.Uint64(header[104:112]))
 	r.metaInfoSize = int(binary.LittleEndian.Uint32(header[80:84]))
 	err = r.loadMetaInfo()
@@ -260,8 +266,11 @@ func (r *r) loadHeaderAndMetaInfo() error {
 func (r *r) getHeader() ([]byte, error) {
 	headerBytes := make([]byte, 512)
 	written, err := r.stream.Read(headerBytes)
-	if written < 512 {
+	if err != nil {
 		return nil, err
+	}
+	if written < 512 {
+		return nil, invalidYxdbFile()
 	}
 	return headerBytes, nil
 }
@@ -274,7 +283,7 @@ func (r *r) loadMetaInfo() error {
 		return err
 	}
 	if read < size {
-		return errors.New(`not enough bytes read from meta-info`)
+		return invalidYxdbFile()
 	}
 	r.metaInfoStr = string(utf16.Decode(bytesToUint16(metaInfoBytes[0 : size-2])))
 	return r.getFields()
@@ -305,4 +314,8 @@ func bytesToUint16(buffer []byte) []uint16 {
 	rawHeader.Len = utf16Len
 	rawHeader.Cap = utf16Len
 	return utf16Bytes
+}
+
+func invalidYxdbFile() error {
+	return errors.New(`file is not a valid YXDB format`)
 }

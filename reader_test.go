@@ -10,12 +10,8 @@ import (
 )
 
 func TestGetReader(t *testing.T) {
-	path := getPath(`AllNormalFields.yxdb`)
-	yxdb, err := yx.ReadFile(path)
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
 
-	if err != nil {
-		t.Fatalf(`expected no error but got: %v`, err.Error())
-	}
 	if yxdb.NumRecords() != 1 {
 		t.Fatalf(`expected 1 record but got %v`, yxdb.NumRecords())
 	}
@@ -67,12 +63,7 @@ func TestGetReader(t *testing.T) {
 }
 
 func TestLotsOfRecords(t *testing.T) {
-	path := getPath(`LotsOfRecords.yxdb`)
-	yxdb, err := yx.ReadFile(path)
-
-	if err != nil {
-		t.Fatalf(`expected no error but got %v`, err.Error())
-	}
+	yxdb := getYxdb(t, `LotsOfRecords.yxdb`)
 
 	sum := int64(0)
 	for yxdb.Next() {
@@ -112,11 +103,8 @@ func TestLoadReaderFromStream(t *testing.T) {
 }
 
 func TestTutorialData(t *testing.T) {
-	path := getPath(`TutorialData.yxdb`)
-	yxdb, err := yx.ReadFile(path)
-	if err != nil {
-		t.Fatalf(`expected no error but got %v`, err.Error())
-	}
+	yxdb := getYxdb(t, `TutorialData.yxdb`)
+
 	mrCount := 0
 	for yxdb.Next() {
 		if value, _ := yxdb.ReadStringWithName(`Prefix`); value == `Mr` {
@@ -129,12 +117,8 @@ func TestTutorialData(t *testing.T) {
 }
 
 func TestNewYxdb(t *testing.T) {
-	path := getPath(`TestNewYxdb.yxdb`)
-	yxdb, err := yx.ReadFile(path)
+	yxdb := getYxdb(t, `TestNewYxdb.yxdb`)
 
-	if err != nil {
-		t.Fatalf(`expected no error but got %v`, err.Error())
-	}
 	sum := byte(0)
 	for yxdb.Next() {
 		value, isNull := yxdb.ReadByteWithIndex(1)
@@ -150,11 +134,7 @@ func TestNewYxdb(t *testing.T) {
 }
 
 func TestVeryLongField(t *testing.T) {
-	path := getPath(`VeryLongField.yxdb`)
-	yxdb, err := yx.ReadFile(path)
-	if err != nil {
-		t.Fatalf(`expected no error but got %v`, err.Error())
-	}
+	yxdb := getYxdb(t, `VeryLongField.yxdb`)
 
 	expectedSize := 604732
 
@@ -177,6 +157,124 @@ func TestVeryLongField(t *testing.T) {
 	}
 }
 
+func TestReadStringFromNonStringIndex(t *testing.T) {
+	defer checkPanic(t, `field at index 0 is not a string field`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadStringWithIndex(0)
+}
+
+func TestReadBoolFromNonBoolIndex(t *testing.T) {
+	defer checkPanic(t, `field at index 0 is not a bool field`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadBoolWithIndex(0)
+}
+
+func TestReadBlobFromNonBlobIndex(t *testing.T) {
+	defer checkPanic(t, `field at index 0 is not a blob field`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadBlobWithIndex(0)
+}
+
+func TestReadTimeFromNonTimeIndex(t *testing.T) {
+	defer checkPanic(t, `field at index 0 is not a time field`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadTimeWithIndex(0)
+}
+
+func TestReadFloat64FromNonFloat64Index(t *testing.T) {
+	defer checkPanic(t, `field at index 0 is not a float64 field`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadFloat64WithIndex(0)
+}
+
+func TestReadInt64FromNonInt64Index(t *testing.T) {
+	defer checkPanic(t, `field at index 0 is not a int64 field`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadInt64WithIndex(0)
+}
+
+func TestReadByteFromNonByteIndex(t *testing.T) {
+	defer checkPanic(t, `field at index 1 is not a byte field`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadByteWithIndex(1)
+}
+
+func TestReadInvalidStringField(t *testing.T) {
+	defer checkPanic(t, `field 'invalid' does not exist`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadStringWithName(`invalid`)
+}
+
+func TestReadInvalidBoolField(t *testing.T) {
+	defer checkPanic(t, `field 'invalid' does not exist`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadBoolWithName(`invalid`)
+}
+
+func TestReadInvalidBlobField(t *testing.T) {
+	defer checkPanic(t, `field 'invalid' does not exist`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadBlobWithName(`invalid`)
+}
+
+func TestReadInvalidTimeField(t *testing.T) {
+	defer checkPanic(t, `field 'invalid' does not exist`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadTimeWithName(`invalid`)
+}
+
+func TestReadInvalidFloat64Field(t *testing.T) {
+	defer checkPanic(t, `field 'invalid' does not exist`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadFloat64WithName(`invalid`)
+}
+
+func TestReadInvalidInt64Field(t *testing.T) {
+	defer checkPanic(t, `field 'invalid' does not exist`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadInt64WithName(`invalid`)
+}
+
+func TestReadInvalidByteField(t *testing.T) {
+	defer checkPanic(t, `field 'invalid' does not exist`)()
+	yxdb := getYxdb(t, `AllNormalFields.yxdb`)
+
+	yxdb.ReadByteWithName(`invalid`)
+}
+
+func TestInvalidFile(t *testing.T) {
+	_, err := yx.ReadFile(getPath(`invalid.txt`))
+	if err == nil {
+		t.Fatalf(`expected an error but got none`)
+	}
+	if err.Error() != `file is not a valid YXDB format` {
+		t.Fatalf(`expected 'file is not a valid YXDB format' but got '%v'`, err.Error())
+	}
+}
+
+func TestInvalidSmallFile(t *testing.T) {
+	_, err := yx.ReadFile(getPath(`invalidSmall.txt`))
+	if err == nil {
+		t.Fatalf(`expected an error but got none`)
+	}
+	if err.Error() != `file is not a valid YXDB format` {
+		t.Fatalf(`expected 'file is not a valid YXDB format' but got '%v'`, err.Error())
+	}
+}
+
 func getPath(fileName string) string {
 	return fmt.Sprintf(`test_files/%v`, fileName)
 }
@@ -185,5 +283,25 @@ func checkField(t *testing.T, expected interface{}, isNull bool, getActual func(
 	actual, actualIsNull := getActual()
 	if actual != expected || actualIsNull != isNull {
 		t.Fatalf(`expected %v and isNull=%v but got %v and isNull=%v`, expected, isNull, actual, actualIsNull)
+	}
+}
+
+func getYxdb(t *testing.T, fileName string) yx.Reader {
+	yxdb, err := yx.ReadFile(getPath(fileName))
+	if err != nil {
+		t.Fatalf(`expected no error but got: %v`, err.Error())
+	}
+	return yxdb
+}
+
+func checkPanic(t *testing.T, expectedMsg string) func() {
+	return func() {
+		r := recover()
+		if r == nil {
+			t.Fatalf(`expected a panic but it did not occur`)
+		}
+		if r != expectedMsg {
+			t.Fatalf(`expected '%v' but got '%v'`, expectedMsg, r)
+		}
 	}
 }

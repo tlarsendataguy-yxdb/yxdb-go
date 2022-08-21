@@ -2,6 +2,7 @@ package yxrecord
 
 import (
 	"errors"
+	"fmt"
 	e "github.com/tlarsendataguy-yxdb/yxdb-go/extractors"
 	m "github.com/tlarsendataguy-yxdb/yxdb-go/metafield"
 	"time"
@@ -111,72 +112,114 @@ func FromFieldList(fields []m.MetaInfoField) (*YxdbRecord, error) {
 }
 
 func (y *YxdbRecord) ExtractInt64WithIndex(index int, buffer []byte) (int64, bool) {
-	extractor := y.int64Extractors[index]
+	extractor, ok := y.int64Extractors[index]
+	if !ok {
+		panic(invalidIndex(index, `int64`))
+	}
 	return extractor(buffer)
 }
 
 func (y *YxdbRecord) ExtractInt64WithName(name string, buffer []byte) (int64, bool) {
-	index := y.nameToIndex[name]
+	index, ok := y.nameToIndex[name]
+	if !ok {
+		panic(invalidName(name))
+	}
 	return y.ExtractInt64WithIndex(index, buffer)
 }
 
 func (y *YxdbRecord) ExtractFloat64WithIndex(index int, buffer []byte) (float64, bool) {
-	extractor := y.float64Extractors[index]
+	extractor, ok := y.float64Extractors[index]
+	if !ok {
+		panic(invalidIndex(index, `float64`))
+	}
 	return extractor(buffer)
 }
 
 func (y *YxdbRecord) ExtractFloat64WithName(name string, buffer []byte) (float64, bool) {
-	index := y.nameToIndex[name]
+	index, ok := y.nameToIndex[name]
+	if !ok {
+		panic(invalidName(name))
+	}
 	return y.ExtractFloat64WithIndex(index, buffer)
 }
 
 func (y *YxdbRecord) ExtractStringWithIndex(index int, buffer []byte) (string, bool) {
-	extractor := y.stringExtractors[index]
+	extractor, ok := y.stringExtractors[index]
+	if !ok {
+		panic(invalidIndex(index, `string`))
+	}
 	return extractor(buffer)
 }
 
 func (y *YxdbRecord) ExtractStringWithName(name string, buffer []byte) (string, bool) {
-	index := y.nameToIndex[name]
+	index, ok := y.nameToIndex[name]
+	if !ok {
+		panic(invalidName(name))
+	}
 	return y.ExtractStringWithIndex(index, buffer)
 }
 
 func (y *YxdbRecord) ExtractTimeWithIndex(index int, buffer []byte) (time.Time, bool) {
-	extractor := y.timeExtractors[index]
+	extractor, ok := y.timeExtractors[index]
+	if !ok {
+		panic(invalidIndex(index, `time`))
+	}
 	return extractor(buffer)
 }
 
 func (y *YxdbRecord) ExtractTimeWithName(name string, buffer []byte) (time.Time, bool) {
-	index := y.nameToIndex[name]
+	index, ok := y.nameToIndex[name]
+	if !ok {
+		panic(invalidName(name))
+	}
 	return y.ExtractTimeWithIndex(index, buffer)
 }
 
 func (y *YxdbRecord) ExtractBoolWithIndex(index int, buffer []byte) (bool, bool) {
-	extractor := y.boolExtractors[index]
+	extractor, ok := y.boolExtractors[index]
+	if !ok {
+		panic(invalidIndex(index, `bool`))
+	}
 	return extractor(buffer)
 }
 
 func (y *YxdbRecord) ExtractBoolWithName(name string, buffer []byte) (bool, bool) {
-	index := y.nameToIndex[name]
+	index, ok := y.nameToIndex[name]
+	if !ok {
+		panic(invalidName(name))
+	}
 	return y.ExtractBoolWithIndex(index, buffer)
 }
 
 func (y *YxdbRecord) ExtractByteWithIndex(index int, buffer []byte) (byte, bool) {
-	extractor := y.byteExtractors[index]
+	extractor, ok := y.byteExtractors[index]
+	if !ok {
+		panic(invalidIndex(index, `byte`))
+	}
 	return extractor(buffer)
 }
 
 func (y *YxdbRecord) ExtractByteWithName(name string, buffer []byte) (byte, bool) {
-	index := y.nameToIndex[name]
+	index, ok := y.nameToIndex[name]
+	if !ok {
+		panic(invalidName(name))
+	}
 	return y.ExtractByteWithIndex(index, buffer)
 }
 
 func (y *YxdbRecord) ExtractBlobWithIndex(index int, buffer []byte) []byte {
-	extractor := y.blobExtractors[index]
+	extractor, ok := y.blobExtractors[index]
+	if !ok {
+		panic(invalidIndex(index, `blob`))
+	}
 	return extractor(buffer)
 }
 
 func (y *YxdbRecord) ExtractBlobWithName(name string, buffer []byte) []byte {
-	index := y.nameToIndex[name]
+	index, ok := y.nameToIndex[name]
+	if !ok {
+		panic(invalidName(name))
+	}
 	return y.ExtractBlobWithIndex(index, buffer)
 }
 
@@ -223,4 +266,12 @@ func (y *YxdbRecord) addFieldNameToIndexMap(name string, dataType DataType) int 
 	})
 	y.nameToIndex[name] = index
 	return index
+}
+
+func invalidIndex(index int, dataType string) string {
+	return fmt.Sprintf(`field at index %v is not a %v field`, index, dataType)
+}
+
+func invalidName(name string) string {
+	return fmt.Sprintf(`field '%v' does not exist`, name)
 }
