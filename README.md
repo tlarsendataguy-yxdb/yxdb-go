@@ -30,3 +30,5 @@ Fields can be access via the `ReadXxxWithName()` and `ReadXxxWithIndex()` method
 The `WithName()` methods read a field by its name. The `WithIndex()` methods read a field by its index in the file.
 
 If either the index number or field name is invalid, the application will panic.
+
+To read spatial objects, use the `ToGeoJSON()` function located in `yxdb/spatial`. The `ToGeoJSON()` function translates the binary SpatialObj format into a GeoJSON string.
